@@ -20,7 +20,6 @@
     margin: 0 auto;
   }
 
-  /* Header */
   .header {
     display: flex;
     justify-content: space-between;
@@ -58,11 +57,10 @@
     background: #5a7090;
     transition: all 0.3s;
   }
-  .dot.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; animation: blink 1.5s infinite; }
-  .dot.translating { background: #ffb300; box-shadow: 0 0 8px #ffb300; animation: blink 0.8s infinite; }
+  .dot.active  { background: #00ff88; box-shadow: 0 0 8px #00ff88; animation: blink 1.5s infinite; }
+  .dot.working { background: #ffb300; box-shadow: 0 0 8px #ffb300; animation: blink 0.8s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* Info */
   .info {
     background: rgba(0,102,255,0.08);
     border: 1px solid rgba(0,102,255,0.2);
@@ -73,21 +71,20 @@
     line-height: 1.7;
   }
 
-  /* Buttons */
   .btn-main {
     width: 100%;
-    padding: 18px;
+    padding: 20px;
     border: none;
     border-radius: 14px;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: all 0.2s;
     color: #fff;
+    transition: all 0.2s;
   }
   .btn-main.idle {
     background: linear-gradient(135deg, #0066ff, #00d4ff);
@@ -103,7 +100,6 @@
     50%{box-shadow:0 4px 40px rgba(255,68,102,0.7)}
   }
 
-  /* Error */
   .error {
     background: rgba(255,68,102,0.1);
     border: 1px solid rgba(255,68,102,0.3);
@@ -114,51 +110,49 @@
     display: none;
   }
 
-  /* Panels */
+  .panel-it {
+    background: #0d1f0f;
+    border: 2px solid #00ff88;
+    border-radius: 16px;
+    padding: 24px 20px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .panel-it-label {
+    font-family: monospace;
+    font-size: 10px;
+    color: #00ff88;
+    letter-spacing: 3px;
+    opacity: 0.7;
+  }
+  .panel-it-text {
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .panel-it-text.muted {
+    color: #5a7090;
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  .panel-it-text.working {
+    color: #ffb300;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 400;
+  }
+
   .panel {
     background: #111827;
     border: 1px solid #1e2d45;
     border-radius: 12px;
     overflow: hidden;
   }
-  .panel-head {
-    background: #1a2235;
-    padding: 8px 14px;
-    border-bottom: 1px solid #1e2d45;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .panel-label {
-    font-family: monospace;
-    font-size: 10px;
-    color: #5a7090;
-    letter-spacing: 2px;
-  }
-  .lang-en {
-    font-family: monospace; font-size: 10px; font-weight: 600;
-    background: rgba(0,212,255,0.1); color: #00d4ff;
-    border: 1px solid rgba(0,212,255,0.2);
-    padding: 2px 8px; border-radius: 6px;
-  }
-  .lang-it {
-    font-family: monospace; font-size: 10px; font-weight: 600;
-    background: rgba(0,255,136,0.1); color: #00ff88;
-    border: 1px solid rgba(0,255,136,0.2);
-    padding: 2px 8px; border-radius: 6px;
-  }
-  .panel-body {
-    padding: 14px;
-    min-height: 65px;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  .muted { color: #5a7090; font-style: italic; font-size: 13px; }
-  .interim { color: #5a7090; font-style: italic; }
-  .translated { color: #00ff88; }
-  .translating-msg { color: #ffb300; font-style: italic; font-size: 13px; }
-
-  /* Transcript */
   .transcript-head {
     background: #1a2235;
     padding: 10px 14px;
@@ -189,7 +183,7 @@
   .btn-cl { background: rgba(255,68,102,0.1); color: #ff4466; border: 1px solid rgba(255,68,102,0.2); }
 
   .transcript-list {
-    max-height: 320px;
+    max-height: 260px;
     overflow-y: auto;
     padding: 10px;
     display: flex;
@@ -201,7 +195,7 @@
 
   .empty-msg {
     text-align: center;
-    padding: 28px 0;
+    padding: 24px 0;
     color: #5a7090;
     font-size: 13px;
     font-style: italic;
@@ -225,28 +219,28 @@
     border-bottom: 1px solid #1e2d45;
   }
   .entry-en {
-    padding: 7px 10px;
-    font-size: 13px;
-    color: #00d4ff;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #5a7090;
     border-bottom: 1px dashed #1e2d45;
     line-height: 1.5;
   }
   .entry-it {
     padding: 7px 10px;
-    font-size: 13px;
+    font-size: 14px;
     color: #00ff88;
     line-height: 1.5;
+    font-weight: 500;
   }
   .entry-sublabel {
     font-family: monospace;
     font-size: 9px;
     opacity: 0.5;
     display: block;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     letter-spacing: 1px;
   }
 
-  /* Save toast */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -279,7 +273,7 @@
 </div>
 
 <div class="info">
-  💡 Premi <b>Avvia</b> e avvicina il telefono al collega inglese.<br>
+  💡 Premi <b>Avvia</b> e avvicina il telefono al collega.<br>
   Premi <b>Stop</b> per salvare automaticamente la trascrizione.
 </div>
 
@@ -290,33 +284,15 @@
 
 <div class="error" id="errBox"></div>
 
-<!-- Live EN -->
-<div class="panel">
-  <div class="panel-head">
-    <span class="panel-label">🔊 RILEVATO</span>
-    <span class="lang-en">ENGLISH</span>
-  </div>
-  <div class="panel-body" id="liveEn">
-    <span class="muted">In attesa dell'audio inglese...</span>
-  </div>
+<div class="panel-it">
+  <div class="panel-it-label">🇮🇹 TRADUZIONE ITALIANA</div>
+  <div class="panel-it-text muted" id="liveIt">In attesa della traduzione...</div>
 </div>
 
-<!-- Live IT -->
-<div class="panel">
-  <div class="panel-head">
-    <span class="panel-label">🇮🇹 TRADUZIONE</span>
-    <span class="lang-it">ITALIANO</span>
-  </div>
-  <div class="panel-body" id="liveIt">
-    <span class="muted">La traduzione apparirà qui...</span>
-  </div>
-</div>
-
-<!-- Transcript -->
 <div class="panel">
   <div class="transcript-head">
     <div class="transcript-title">
-      📋 Trascrizione
+      📋 Storico
       <span class="count" id="countBadge">0</span>
     </div>
     <div style="display:flex;gap:6px">
@@ -338,7 +314,6 @@
   let timer = null;
   let busy = false;
   let transcript = [];
-  let sessionNum = 1;
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -361,6 +336,12 @@
     setTimeout(() => t.style.display = 'none', 2500);
   }
 
+  function setItPanel(text, mode) {
+    const el = document.getElementById('liveIt');
+    el.textContent = text;
+    el.className = 'panel-it-text ' + (mode || '');
+  }
+
   function toggle() {
     recording ? stop() : start();
   }
@@ -378,8 +359,7 @@
     rec.onstart = () => {
       recording = true;
       setStatus('active', 'ASCOLTO');
-      const btn = document.getElementById('btnMain');
-      btn.className = 'btn-main recording';
+      document.getElementById('btnMain').className = 'btn-main recording';
       document.getElementById('btnIcon').textContent = '⏹';
       document.getElementById('btnTxt').textContent = 'Stop e Salva';
     };
@@ -390,24 +370,21 @@
         if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
         else interim += e.results[i][0].transcript;
       }
-      if (interim) {
-        document.getElementById('liveEn').innerHTML = `<span class="interim">${interim}</span>`;
-      }
+      if (interim) setItPanel('⏳ ' + interim, 'working');
       if (final.trim()) {
         pending += final;
-        document.getElementById('liveEn').textContent = pending.trim();
         clearTimeout(timer);
         timer = setTimeout(() => {
           translate(pending.trim());
           pending = '';
-        }, 1200);
+        }, 1000);
       }
     };
 
     rec.onerror = (e) => {
       if (e.error === 'no-speech') return;
       if (e.error === 'not-allowed') {
-        showError('⚠️ Microfono bloccato. In Chrome: tocca 🔒 nella barra indirizzi → Microfono → Consenti → ricarica la pagina.');
+        showError('⚠️ Microfono bloccato. Tocca 🔒 nella barra Chrome → Microfono → Consenti → ricarica.');
       } else {
         showError('Errore: ' + e.error);
       }
@@ -422,12 +399,10 @@
     recording = false;
     if (rec) { rec.stop(); rec = null; }
     setStatus('', 'PRONTO');
-    const btn = document.getElementById('btnMain');
-    btn.className = 'btn-main idle';
+    document.getElementById('btnMain').className = 'btn-main idle';
     document.getElementById('btnIcon').textContent = '🎤';
     document.getElementById('btnTxt').textContent = 'Avvia Ascolto';
 
-    // Traduci eventuale testo pendente, poi salva
     if (pending.trim()) {
       translate(pending.trim(), autoSave);
       pending = '';
@@ -439,33 +414,27 @@
   async function translate(text, saveAfter = false) {
     if (!text || busy) return;
     busy = true;
-    setStatus('translating', 'TRADUCO');
-    document.getElementById('liveIt').innerHTML = '<span class="translating-msg">⏳ Traduzione in corso...</span>';
+    setStatus('working', 'TRADUCO');
+    setItPanel('⏳ Traduzione in corso...', 'working');
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: 'Traduci in italiano questo testo inglese parlato in una riunione IT. Mantieni in inglese i termini tecnici comuni (API, server, deploy, bug, commit, pull request, ecc.). Rispondi SOLO con la traduzione.\n\nTesto: ' + text
-          }]
-        })
-      });
+      const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=it&dt=t&q=' + encodeURIComponent(text);
+      const res = await fetch(url);
       const data = await res.json();
-      const it = data.content?.[0]?.text || '—';
 
-      document.getElementById('liveEn').textContent = text;
-      document.getElementById('liveIt').innerHTML = `<span class="translated">${it}</span>`;
+      let it = '';
+      if (data && data[0]) {
+        data[0].forEach(seg => { if (seg && seg[0]) it += seg[0]; });
+      }
+      it = it.trim() || '—';
 
+      setItPanel(it, '');
       addEntry(text, it);
       if (saveAfter) setTimeout(() => downloadNow(true), 300);
 
-    } catch {
-      document.getElementById('liveIt').innerHTML = '<span style="color:#ff4466">Errore connessione.</span>';
+    } catch (err) {
+      setItPanel('⚠️ Errore di rete. Controlla la connessione.', 'working');
+      showError('Errore traduzione: ' + err.message);
     }
 
     busy = false;
@@ -485,8 +454,8 @@
     div.className = 'entry';
     div.innerHTML = `
       <div class="entry-time">${now}</div>
-      <div class="entry-en"><span class="entry-sublabel">ENGLISH</span>${en}</div>
-      <div class="entry-it"><span class="entry-sublabel">ITALIANO</span>${it}</div>
+      <div class="entry-en"><span class="entry-sublabel">EN</span>${en}</div>
+      <div class="entry-it"><span class="entry-sublabel">IT</span>${it}</div>
     `;
     list.appendChild(div);
     list.scrollTop = list.scrollHeight;
@@ -508,7 +477,6 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-
     showToast('✅ Trascrizione salvata!');
   }
 
@@ -518,6 +486,7 @@
       transcript = [];
       document.getElementById('countBadge').textContent = '0';
       document.getElementById('list').innerHTML = '<div class="empty-msg">Nessuna trascrizione ancora.<br>Avvia l\'ascolto per iniziare.</div>';
+      setItPanel('In attesa della traduzione...', 'muted');
     }
   }
 </script>
