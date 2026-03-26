@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IT Translator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e17;
+    color: #e2eaf6;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+  .logo-title {
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #00d4ff, #0066ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: #5a7090;
+    letter-spacing: 2px;
+    font-family: monospace;
+  }
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #111827;
+    border: 1px solid #1e2d45;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: monospace;
+    font-size: 11px;
+    color: #5a7090;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #5a7090;
+    transition: all 0.3s;
+  }
+  .dot.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; animation: blink 1.5s infinite; }
+  .dot.translating { background: #ffb300; box-shadow: 0 0 8px #ffb300; animation: blink 0.8s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Info */
+  .info {
+    background: rgba(0,102,255,0.08);
+    border: 1px solid rgba(0,102,255,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #5a7090;
+    line-height: 1.7;
+  }
+
+  /* Buttons */
+  .btn-main {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    color: #fff;
+  }
+  .btn-main.idle {
+    background: linear-gradient(135deg, #0066ff, #00d4ff);
+    box-shadow: 0 4px 24px rgba(0,102,255,0.4);
+  }
+  .btn-main.recording {
+    background: linear-gradient(135deg, #c0001a, #ff4466);
+    box-shadow: 0 4px 24px rgba(255,68,102,0.5);
+    animation: recPulse 2s infinite;
+  }
+  @keyframes recPulse {
+    0%,100%{box-shadow:0 4px 24px rgba(255,68,102,0.4)}
+    50%{box-shadow:0 4px 40px rgba(255,68,102,0.7)}
+  }
+
+  /* Error */
+  .error {
+    background: rgba(255,68,102,0.1);
+    border: 1px solid rgba(255,68,102,0.3);
+    color: #ff4466;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: none;
+  }
+
+  /* Panels */
+  .panel {
+    background: #111827;
+    border: 1px solid #1e2d45;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-head {
+    background: #1a2235;
+    padding: 8px 14px;
+    border-bottom: 1px solid #1e2d45;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-label {
+    font-family: monospace;
+    font-size: 10px;
+    color: #5a7090;
+    letter-spacing: 2px;
+  }
+  .lang-en {
+    font-family: monospace; font-size: 10px; font-weight: 600;
+    background: rgba(0,212,255,0.1); color: #00d4ff;
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .lang-it {
+    font-family: monospace; font-size: 10px; font-weight: 600;
+    background: rgba(0,255,136,0.1); color: #00ff88;
+    border: 1px solid rgba(0,255,136,0.2);
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .panel-body {
+    padding: 14px;
+    min-height: 65px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .muted { color: #5a7090; font-style: italic; font-size: 13px; }
+  .interim { color: #5a7090; font-style: italic; }
+  .translated { color: #00ff88; }
+  .translating-msg { color: #ffb300; font-style: italic; font-size: 13px; }
+
+  /* Transcript */
+  .transcript-head {
+    background: #1a2235;
+    padding: 10px 14px;
+    border-bottom: 1px solid #1e2d45;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .transcript-title {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .count {
+    font-family: monospace; font-size: 10px;
+    background: rgba(0,212,255,0.1); color: #00d4ff;
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 2px 7px; border-radius: 10px;
+  }
+  .btn-sm {
+    padding: 5px 10px; border-radius: 7px;
+    font-family: monospace; font-size: 10px; font-weight: 600;
+    cursor: pointer; border: none;
+  }
+  .btn-dl { background: rgba(0,255,136,0.1); color: #00ff88; border: 1px solid rgba(0,255,136,0.2); }
+  .btn-cl { background: rgba(255,68,102,0.1); color: #ff4466; border: 1px solid rgba(255,68,102,0.2); }
+
+  .transcript-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .transcript-list::-webkit-scrollbar { width: 3px; }
+  .transcript-list::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 2px; }
+
+  .empty-msg {
+    text-align: center;
+    padding: 28px 0;
+    color: #5a7090;
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  .entry {
+    background: #1a2235;
+    border: 1px solid #1e2d45;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  .entry-time {
+    padding: 5px 10px;
+    font-family: monospace;
+    font-size: 9px;
+    color: #5a7090;
+    border-bottom: 1px solid #1e2d45;
+  }
+  .entry-en {
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #00d4ff;
+    border-bottom: 1px dashed #1e2d45;
+    line-height: 1.5;
+  }
+  .entry-it {
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #00ff88;
+    line-height: 1.5;
+  }
+  .entry-sublabel {
+    font-family: monospace;
+    font-size: 9px;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 3px;
+    letter-spacing: 1px;
+  }
+
+  /* Save toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00ff88;
+    color: #0a0e17;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    display: none;
+    z-index: 99;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,255,136,0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo-title">IT Translator</div>
+    <div class="logo-sub">EN → IT · LIVE MEETING</div>
+  </div>
+  <div class="status-badge">
+    <div class="dot" id="dot"></div>
+    <span id="statusTxt">PRONTO</span>
+  </div>
+</div>
+
+<div class="info">
+  💡 Premi <b>Avvia</b> e avvicina il telefono al collega inglese.<br>
+  Premi <b>Stop</b> per salvare automaticamente la trascrizione.
+</div>
+
+<button class="btn-main idle" id="btnMain" onclick="toggle()">
+  <span id="btnIcon">🎤</span>
+  <span id="btnTxt">Avvia Ascolto</span>
+</button>
+
+<div class="error" id="errBox"></div>
+
+<!-- Live EN -->
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-label">🔊 RILEVATO</span>
+    <span class="lang-en">ENGLISH</span>
+  </div>
+  <div class="panel-body" id="liveEn">
+    <span class="muted">In attesa dell'audio inglese...</span>
+  </div>
+</div>
+
+<!-- Live IT -->
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-label">🇮🇹 TRADUZIONE</span>
+    <span class="lang-it">ITALIANO</span>
+  </div>
+  <div class="panel-body" id="liveIt">
+    <span class="muted">La traduzione apparirà qui...</span>
+  </div>
+</div>
+
+<!-- Transcript -->
+<div class="panel">
+  <div class="transcript-head">
+    <div class="transcript-title">
+      📋 Trascrizione
+      <span class="count" id="countBadge">0</span>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm btn-dl" onclick="downloadNow()">⬇ Salva</button>
+      <button class="btn-sm btn-cl" onclick="clearAll()">🗑 Pulisci</button>
+    </div>
+  </div>
+  <div class="transcript-list" id="list">
+    <div class="empty-msg">Nessuna trascrizione ancora.<br>Avvia l'ascolto per iniziare.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let rec = null;
+  let recording = false;
+  let pending = '';
+  let timer = null;
+  let busy = false;
+  let transcript = [];
+  let sessionNum = 1;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function setStatus(state, txt) {
+    document.getElementById('dot').className = 'dot ' + state;
+    document.getElementById('statusTxt').textContent = txt;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errBox');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 7000);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
+  }
+
+  function toggle() {
+    recording ? stop() : start();
+  }
+
+  function start() {
+    if (!SpeechRecognition) {
+      showError('Browser non supportato. Apri questo file con Chrome.');
+      return;
+    }
+    rec = new SpeechRecognition();
+    rec.lang = 'en-US';
+    rec.continuous = true;
+    rec.interimResults = true;
+
+    rec.onstart = () => {
+      recording = true;
+      setStatus('active', 'ASCOLTO');
+      const btn = document.getElementById('btnMain');
+      btn.className = 'btn-main recording';
+      document.getElementById('btnIcon').textContent = '⏹';
+      document.getElementById('btnTxt').textContent = 'Stop e Salva';
+    };
+
+    rec.onresult = (e) => {
+      let interim = '', final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+        else interim += e.results[i][0].transcript;
+      }
+      if (interim) {
+        document.getElementById('liveEn').innerHTML = `<span class="interim">${interim}</span>`;
+      }
+      if (final.trim()) {
+        pending += final;
+        document.getElementById('liveEn').textContent = pending.trim();
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          translate(pending.trim());
+          pending = '';
+        }, 1200);
+      }
+    };
+
+    rec.onerror = (e) => {
+      if (e.error === 'no-speech') return;
+      if (e.error === 'not-allowed') {
+        showError('⚠️ Microfono bloccato. In Chrome: tocca 🔒 nella barra indirizzi → Microfono → Consenti → ricarica la pagina.');
+      } else {
+        showError('Errore: ' + e.error);
+      }
+      stop(false);
+    };
+
+    rec.onend = () => { if (recording) rec.start(); };
+    rec.start();
+  }
+
+  function stop(autoSave = true) {
+    recording = false;
+    if (rec) { rec.stop(); rec = null; }
+    setStatus('', 'PRONTO');
+    const btn = document.getElementById('btnMain');
+    btn.className = 'btn-main idle';
+    document.getElementById('btnIcon').textContent = '🎤';
+    document.getElementById('btnTxt').textContent = 'Avvia Ascolto';
+
+    // Traduci eventuale testo pendente, poi salva
+    if (pending.trim()) {
+      translate(pending.trim(), autoSave);
+      pending = '';
+    } else if (autoSave && transcript.length > 0) {
+      downloadNow(true);
+    }
+  }
+
+  async function translate(text, saveAfter = false) {
+    if (!text || busy) return;
+    busy = true;
+    setStatus('translating', 'TRADUCO');
+    document.getElementById('liveIt').innerHTML = '<span class="translating-msg">⏳ Traduzione in corso...</span>';
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: 'Traduci in italiano questo testo inglese parlato in una riunione IT. Mantieni in inglese i termini tecnici comuni (API, server, deploy, bug, commit, pull request, ecc.). Rispondi SOLO con la traduzione.\n\nTesto: ' + text
+          }]
+        })
+      });
+      const data = await res.json();
+      const it = data.content?.[0]?.text || '—';
+
+      document.getElementById('liveEn').textContent = text;
+      document.getElementById('liveIt').innerHTML = `<span class="translated">${it}</span>`;
+
+      addEntry(text, it);
+      if (saveAfter) setTimeout(() => downloadNow(true), 300);
+
+    } catch {
+      document.getElementById('liveIt').innerHTML = '<span style="color:#ff4466">Errore connessione.</span>';
+    }
+
+    busy = false;
+    if (recording) setStatus('active', 'ASCOLTO');
+  }
+
+  function addEntry(en, it) {
+    const now = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    transcript.push({ time: now, en, it });
+    document.getElementById('countBadge').textContent = transcript.length;
+
+    const list = document.getElementById('list');
+    const empty = list.querySelector('.empty-msg');
+    if (empty) empty.remove();
+
+    const div = document.createElement('div');
+    div.className = 'entry';
+    div.innerHTML = `
+      <div class="entry-time">${now}</div>
+      <div class="entry-en"><span class="entry-sublabel">ENGLISH</span>${en}</div>
+      <div class="entry-it"><span class="entry-sublabel">ITALIANO</span>${it}</div>
+    `;
+    list.appendChild(div);
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function downloadNow(auto = false) {
+    if (transcript.length === 0) { if (!auto) showError('Nessuna trascrizione da salvare.'); return; }
+
+    const date = new Date().toLocaleDateString('it-IT').replace(/\//g, '-');
+    const time = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h');
+    let txt = `TRASCRIZIONE RIUNIONE IT\nData: ${date}  Ora: ${time}\n${'='.repeat(50)}\n\n`;
+    transcript.forEach(e => {
+      txt += `[${e.time}]\nEN: ${e.en}\nIT: ${e.it}\n\n`;
+    });
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' }));
+    a.download = `riunione-IT-${date}-${time}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    showToast('✅ Trascrizione salvata!');
+  }
+
+  function clearAll() {
+    if (!transcript.length) return;
+    if (confirm('Cancellare tutta la trascrizione?')) {
+      transcript = [];
+      document.getElementById('countBadge').textContent = '0';
+      document.getElementById('list').innerHTML = '<div class="empty-msg">Nessuna trascrizione ancora.<br>Avvia l\'ascolto per iniziare.</div>';
+    }
+  }
+</script>
+</body>
+</html>
